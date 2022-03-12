@@ -4,11 +4,13 @@ const mongoose = require("mongoose");
 
 const bodyParser = require("body-parser");
 
-const authRouter = require('./Routes/Auth')
+const authRouter = require("./Routes/Auth");
 
-const cors = require('cors')
+const productRouter = require("./Routes/Product");
 
-require('dotenv').config()
+const cors = require("cors");
+
+require("dotenv").config();
 
 const connectDB = async () => {
   try {
@@ -29,18 +31,18 @@ const connectDB = async () => {
 
 connectDB();
 
-
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
 app.use(bodyParser.json());
 
-app.use(cors())
+app.use(cors());
 
 app.get("/", (req, res) => res.send("datisekai"));
 
 app.use("/api/auth", authRouter);
 
+app.use("/api", productRouter);
 
 const PORT = process.env.PORT || 5098;
 
