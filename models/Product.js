@@ -10,7 +10,7 @@ const ProductSchema = new Schema({
   desc: { type: String },
   status: typeNumber,
   roleId: { type: Number, default: 1 },
-  type: { type: Schema.Types.ObjectId, ref: "types" },
+  typeId: { type: Schema.Types.ObjectId, ref: "types" },
   createdAt: {
     type: Date,
     default: new Date().toISOString(),

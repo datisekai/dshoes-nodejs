@@ -1,4 +1,5 @@
 const Type = require("../models/Type");
+const mongoose = require('mongoose')
 
 const addType = async (req, res) => {
   const { type } = req.body;
@@ -43,6 +44,7 @@ const deleteType = async (req, res) => {
 const getAllType = async(req, res) => {
   try{
     const types = await Type.find();
+    console.log(types);
     return res.json({success:true, types})
   }catch(err)
   {

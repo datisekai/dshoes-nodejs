@@ -39,10 +39,11 @@ router.get('/:id',getByIdProduct)
 // get product by type
 router.get('/type/:id',getByTypeProduct)
 
+router.get('/types/all', getAllType)
+
 // Them type mowis
 // api/products/type
 router.post("/type", isLogin, isExist, isManagerProduct, addType);
-router.get("/type", getAllType);
 
 
 //them size moi
