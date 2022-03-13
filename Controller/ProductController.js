@@ -28,6 +28,7 @@ const addProduct = async (req, res) => {
         .status(403)
         .json({ success: false, message: "type is not defined" });
     }
+    console.log(1);
 
     const newProduct = new Product({
       name,
@@ -136,21 +137,25 @@ const getByIdProduct = async (req, res) => {
 
 const getByTypeProduct = async (req, res) => {
   const typeId = req.params.id;
+  const limit = req.query.limit || 5;
+  const page = req.query.page || 1
+  const skip = (page - 1) * limit;
   if (!typeId) {
     return res.status(403).json({ success: false, message: "Not found id" });
   }
   try {
-    const products = await Product.find({ typeId }).populate("type");
-    console.log(products);
+    const products = await Product.find({ typeId }).populate("type").skip(skip).limit(limit);
+    const total = await Product.countDocuments({typeId});
     if (!products) {
       return res.status(403).json({ success: false, message: "Get failed!" });
     }
-    return res.json({ success: true, message: "Get successfully", products });
+    return res.json({ success: true, message: "Get successfully", products, typeId,skip, total });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ success: false, message: "Internal server" });
   }
 };
+
 
 module.exports = {
   addProduct,

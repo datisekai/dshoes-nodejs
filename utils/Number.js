@@ -1,1 +1,1 @@
-module.exports = typeNumber = {type:Number, required:true}
+module.exports = typeNumber = {type:Number}

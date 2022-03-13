@@ -1,1 +1,1 @@
-module.exports = typeString = {type:String, required:true}
+module.exports = typeString = {type:String}

@@ -8,6 +8,10 @@ const authRouter = require("./Routes/Auth");
 
 const productRouter = require("./Routes/Product");
 
+const commentRouter = require('./Routes/Comment')
+
+const orderRouter = require('./Routes/Order')
+
 const cors = require("cors");
 
 require("dotenv").config();
@@ -42,7 +46,9 @@ app.get("/", (req, res) => res.send("datisekai"));
 
 app.use("/api/auth", authRouter);
 
-app.use("/api", productRouter);
+app.use("/api/products", productRouter);
+app.use("/api/comments", commentRouter);
+app.use("/api/orders",orderRouter)
 
 const PORT = process.env.PORT || 5098;
 

@@ -17,12 +17,12 @@ const { addSize, deleteSize } = require("../Controller/SizeController");
 
 // them product moi
 /// api/products
-router.post("/products", isLogin, isExist, isManagerProduct, addProduct);
+router.post("/", isLogin, isExist, isManagerProduct, addProduct);
 
 //xoa product
 // api/products/:id
 router.delete(
-  "/products/:id",
+  "/:id",
   isLogin,
   isExist,
   isManagerProduct,
@@ -31,31 +31,31 @@ router.delete(
 
 //update product
 // api/products/:id
-router.put("/products/:id", isLogin, isExist, isManagerProduct, updateProduct);
+router.put("/:id", isLogin, isExist, isManagerProduct, updateProduct);
 
 // get product by id
 // api/products/:id
-router.get('/products/:id',getByIdProduct)
+router.get('/:id',getByIdProduct)
 // get product by type
-router.get('/products/type/:id',getByTypeProduct)
+router.get('/type/:id',getByTypeProduct)
 
 // Them type mowis
 // api/products/type
-router.post("/products/type", isLogin, isExist, isManagerProduct, addType);
+router.post("/type", isLogin, isExist, isManagerProduct, addType);
 
 
 //them size moi
 // api/products/size/:id
-router.post('/products/size/:id',isLogin, isExist, isManagerProduct, addSize)
+router.post('/size/:id',isLogin, isExist, isManagerProduct, addSize)
 
 //xoa size
 // api/products/size/:id
-router.delete('/products/size/:id',isLogin, isExist, isManagerProduct, deleteSize)
+router.delete('/size/:id',isLogin, isExist, isManagerProduct, deleteSize)
 
 //xoa type
 // api/products/type/:id
 router.delete(
-  "/products/type/:id",
+  "/type/:id",
   isLogin,
   isExist,
   isManagerProduct,
