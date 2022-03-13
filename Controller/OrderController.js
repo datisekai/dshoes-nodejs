@@ -63,9 +63,9 @@ const deleteOrder = async (req, res) => {
 
 const updateOrder = async (req, res) => {
   const id = req.params.id;
-  const { userId, sum, address, phoneNumber, name, products, status } =
+  const { userId, sum, address, phoneNumber, name, status } =
     req.body;
-  if (!userId || !sum || !address || !phoneNumber || !name || !products) {
+  if (!userId || !sum || !address || !phoneNumber || !name) {
     return res
       .status(401)
       .json({ success: false, message: "Please enter full field !" });

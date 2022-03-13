@@ -40,4 +40,14 @@ const deleteType = async (req, res) => {
   }
 };
 
-module.exports = { addType, deleteType };
+const getAllType = async(req, res) => {
+  try{
+    const types = await Type.find();
+    return res.json({success:true, types})
+  }catch(err)
+  {
+    return res.status(403).json({ success: false, message: "Internal server" });
+  }
+}
+
+module.exports = { addType, deleteType,getAllType };

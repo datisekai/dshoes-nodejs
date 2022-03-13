@@ -5,7 +5,7 @@ const isLogin = require("../middleware/isLogin");
 const isManagerUser = require("../middleware/isManagerUser");
 const isExist = require("../middleware/isExist");
 const isManagerProduct = require("../middleware/isManagerProduct");
-const { addType, deleteType } = require("../Controller/TypeController");
+const { addType, deleteType, getAllType } = require("../Controller/TypeController");
 const {
   addProduct,
   deleteProduct,
@@ -42,6 +42,7 @@ router.get('/type/:id',getByTypeProduct)
 // Them type mowis
 // api/products/type
 router.post("/type", isLogin, isExist, isManagerProduct, addType);
+router.get("/type", getAllType);
 
 
 //them size moi
