@@ -144,7 +144,7 @@ const getByTypeProduct = async (req, res) => {
     return res.status(403).json({ success: false, message: "Not found id" });
   }
   try {
-    const products = await Product.find({ typeId }).populate("type").skip(skip).limit(limit);
+    const products = await Product.find({ typeId }).populate("typeId").skip(skip).limit(limit);
     const total = await Product.countDocuments({typeId});
     if (!products) {
       return res.status(403).json({ success: false, message: "Get failed!" });
