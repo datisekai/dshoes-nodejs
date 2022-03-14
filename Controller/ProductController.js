@@ -120,7 +120,7 @@ const getByIdProduct = async (req, res) => {
     return res.status(403).json({ success: false, message: "Not found id" });
   }
   try {
-    const product = await Product.findOne({ _id: id }).populate("type");
+    const product = await Product.findOne({ _id: id }).populate("typeId");
     const sizeProduct = await Size.find({productId:id});
     const size = sizeProduct.map(item => item.size);
     const colorProduct = await Color.find({productId:id});
