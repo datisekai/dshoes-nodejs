@@ -36,7 +36,7 @@ const addProduct = async (req, res) => {
       prices,
       desc,
       status: 1,
-      type,
+      typeId: type,
     });
     await newProduct.save();
     for (const index in size) {
