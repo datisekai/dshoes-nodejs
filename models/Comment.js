@@ -9,7 +9,7 @@ const CommentSchema = new Schema({
     content:typeString,
     createdAt:{
         type:Date,
-        default:(new Date()).toISOString(),
+        default:Date.now(),
     },
     roleId:{
         type:Number,
