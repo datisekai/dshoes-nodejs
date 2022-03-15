@@ -5,6 +5,7 @@ const isLogin = require("../middleware/isLogin");
 const isManagerComments = require("../middleware/isManagerComment");
 const isExist = require("../middleware/isExist");
 const isManagerOrder = require("../middleware/isManagerOrder");
+const isCustomer = require("../middleware/isCustomer");
 const {
   addOrder,
   deleteOrder,
@@ -13,12 +14,13 @@ const {
   getDetailById,
   getAllOrderByToken,
   getAllOrderByAdmin,
+  addOrderFromCustomer,
 } = require("../Controller/OrderController");
-const { route } = require("./Product");
 
 // add order
 // /api/orders/
 router.post("/", isLogin, isExist, isManagerOrder, addOrder);
+router.post("/customers", isLogin, isExist, isCustomer, addOrderFromCustomer);
 
 //delete order
 // /api/orders/:id
@@ -41,4 +43,4 @@ router.get("/", isLogin, getAllOrderByToken);
 //get al order by admin
 router.get("/admin", isLogin, isExist, isManagerComments, getAllOrderByAdmin);
 
-module.exports = router
+module.exports = router;

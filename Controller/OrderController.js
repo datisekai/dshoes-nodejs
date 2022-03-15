@@ -42,6 +42,47 @@ const addOrder = async (req, res) => {
   }
 };
 
+const addOrderFromCustomer = async (req, res) => {
+  const { sum, address, phoneNumber, name, products } = req.body;
+  const userId = req.userId;
+  if (!userId || !sum || !address || !phoneNumber || !name || !products) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Please enter full field !" });
+  }
+  try {
+    const newOrder = new Order({
+      userId,
+      sum,
+      address,
+      phoneNumber,
+      name,
+      status: 1,
+    });
+
+    await newOrder.save();
+
+    for (const index in products) {
+      const newDetail = new DetailOrder({
+        orderId: newOrder._id,
+        productId: products[index].id,
+        size: products[index].size,
+        color: products[index].color,
+        quantify: products[index].quantify,
+      });
+      await newDetail.save();
+    }
+    return res.json({
+      success: true,
+      message: "Add successfull",
+      newOrder,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: "Internal server" });
+  }
+};
+
 const deleteOrder = async (req, res) => {
   const id = req.params.id;
   try {
@@ -63,8 +104,7 @@ const deleteOrder = async (req, res) => {
 
 const updateOrder = async (req, res) => {
   const id = req.params.id;
-  const { userId, sum, address, phoneNumber, name, status } =
-    req.body;
+  const { userId, sum, address, phoneNumber, name, status } = req.body;
   if (!userId || !sum || !address || !phoneNumber || !name) {
     return res
       .status(401)
@@ -159,4 +199,5 @@ module.exports = {
   getDetailById,
   getAllOrderByAdmin,
   getAllOrderByToken,
+  addOrderFromCustomer,
 };

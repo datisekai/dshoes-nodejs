@@ -98,7 +98,7 @@ const updateProduct = async (req, res) => {
       image,
       prices,
       desc,
-      type,
+      typeId:type,
     };
 
     update = await Product.findOneAndUpdate({ _id: productId }, update, {

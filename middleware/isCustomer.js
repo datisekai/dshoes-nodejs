@@ -19,7 +19,7 @@ const verifyToken = async(req, res, next) => {
 
     const rolesId = roleUser.map(item => item.roleId)
     
-    if (rolesId.includes(4)) {
+    if (rolesId.includes(2)) {
       next();
     } else {
      return res.status(403).json({
