@@ -22,6 +22,7 @@ const addComment = async (req, res) => {
       content,
     });
     await newContent.save();
+    return res.json({success:true, message:'Add successfull'})
   } catch (err) {
     console.log(err);
     return res.status(500).json({ success: false, message: "Internal server" });
