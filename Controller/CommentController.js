@@ -78,7 +78,7 @@ const getCommentByProductId = async (req, res) => {
     return res.status(401).json({ success: false, message: "Not found id" });
   }
   try {
-    const comments = await Comment.find({ productId });
+    const comments = await Comment.find({ productId }).populate('userId');
     return res.json({ success: true, comments });
   } catch (err) {
     console.log(err);

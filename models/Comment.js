@@ -5,7 +5,7 @@ const typeString = require('../utils/String')
 
 const CommentSchema = new Schema({
     productId:typeString,
-    userId:typeString,
+    userId:{type:Schema.Types.ObjectId, ref:'users'},
     content:typeString,
     createdAt:{
         type:Date,
