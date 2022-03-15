@@ -32,13 +32,6 @@ const addComment = async (req, res) => {
 const deleteComment = async (req, res) => {
   const id = req.params.id;
   const userToken = req.userId;
-  const { userId, productId } = req.query;
-  if (!userId || !productId) {
-    return res.status(400).json({
-      success: false,
-      message: "Not found userid or productid",
-    });
-  }
   if (!id) {
     return res.status(400).json({
       success: false,
