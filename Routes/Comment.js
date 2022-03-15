@@ -18,6 +18,6 @@ router.delete('/:id',isLogin,isExist, isManagerComments, deleteComment)
 
 // get comments by productId
 // /api/comments/:id
-router.get('/:id', isLogin, isExist, getCommentByProductId)
+router.get('/:id', getCommentByProductId)
 
 module.exports = router
