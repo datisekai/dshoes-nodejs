@@ -40,7 +40,7 @@ const deleteComment = async (req, res) => {
   }
 
   try {
-    const isUser = await Comment.findOne({ userId, productId });
+    const isUser = await Comment.findOne({ userToken, productId });
     if (isUser.userId == userToken) {
       const deleteCm = await Comment.findOneAndDelete({ _id: id });
       if (!deleteCm) {
