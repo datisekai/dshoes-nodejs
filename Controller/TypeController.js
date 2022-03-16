@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 
 const addType = async (req, res) => {
   const { type } = req.body;
-  console.log(type);
   if (!type) {
     return res.status(403).json({ success: false, message: "Not found type" });
   }
@@ -27,7 +26,6 @@ const deleteType = async (req, res) => {
   const typeId = req.params.id;
   try {
     const type = await Type.findOneAndDelete({ _id: typeId });
-    console.log(type);
     if (!type) {
       return res
         .status(401)
@@ -44,7 +42,6 @@ const deleteType = async (req, res) => {
 const getAllType = async(req, res) => {
   try{
     const types = await Type.find();
-    console.log(types);
     return res.json({success:true, types})
   }catch(err)
   {

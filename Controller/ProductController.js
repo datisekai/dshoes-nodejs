@@ -5,7 +5,6 @@ const Color = require("../models/DetailColor");
 
 const addProduct = async (req, res) => {
   const { name, image, prices, desc, type, size, color } = req.body;
-  console.log(size, color);
   if (!name || !image || !prices || !desc || !type) {
     return res
       .status(403)
@@ -28,7 +27,6 @@ const addProduct = async (req, res) => {
         .status(403)
         .json({ success: false, message: "type is not defined" });
     }
-    console.log(1);
 
     const newProduct = new Product({
       name,
