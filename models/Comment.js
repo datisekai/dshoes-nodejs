@@ -7,14 +7,13 @@ const CommentSchema = new Schema({
     productId:typeString,
     userId:{type:Schema.Types.ObjectId, ref:'users'},
     content:typeString,
-    createdAt:{
-        type:Date,
-        default:(new Date()).toISOString(),
-    },
     roleId:{
         type:Number,
         default:3
     }
-})
+}, {
+    timestamps:true
+}
+)
 
 module.exports = mongoose.model('comments',CommentSchema)

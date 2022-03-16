@@ -1,3 +1,4 @@
+const { findOne } = require("../models/Comment");
 const Comment = require("../models/Comment");
 
 const addComment = async (req, res) => {
@@ -22,7 +23,8 @@ const addComment = async (req, res) => {
       content,
     });
     await newContent.save();
-    return res.json({success:true, message:'Add successfull'})
+    const comment = await Comment.findOne({_id:newContent._id}).populate('userId')
+    return res.json({success:true, message:'Add successfull',comment})
   } catch (err) {
     console.log(err);
     return res.status(500).json({ success: false, message: "Internal server" });
@@ -65,7 +67,7 @@ const getCommentByProductId = async (req, res) => {
     return res.status(401).json({ success: false, message: "Not found id" });
   }
   try {
-    const comments = await Comment.find({ productId }).populate('userId');
+    const comments = await Comment.find({ productId }).populate('userId').sort('createdAt');
     return res.json({ success: true, comments });
   } catch (err) {
     console.log(err);
