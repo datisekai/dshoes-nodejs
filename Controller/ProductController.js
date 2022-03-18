@@ -12,12 +12,10 @@ const addProduct = async (req, res) => {
   }
 
   if ((size && size.length < 0) || (color && color.length < 0)) {
-    return res
-      .status(403)
-      .json({
-        success: false,
-        message: "Please enter full field color or size",
-      });
+    return res.status(403).json({
+      success: false,
+      message: "Please enter full field color or size",
+    });
   }
 
   try {
@@ -67,8 +65,8 @@ const deleteProduct = async (req, res) => {
   }
   try {
     const deleteProduct = await Product.findOneAndDelete({ _id: productId });
-    await Size.deleteMany({productId})
-    await Color.deleteMany({productId})
+    await Size.deleteMany({ productId });
+    await Color.deleteMany({ productId });
     if (!deleteProduct) {
       return res.status(401).json({ success: false, message: "Not found id" });
     }
@@ -96,7 +94,7 @@ const updateProduct = async (req, res) => {
       image,
       prices,
       desc,
-      typeId:type,
+      typeId: type,
     };
 
     update = await Product.findOneAndUpdate({ _id: productId }, update, {
@@ -119,14 +117,20 @@ const getByIdProduct = async (req, res) => {
   }
   try {
     const product = await Product.findOne({ _id: id }).populate("typeId");
-    const sizeProduct = await Size.find({productId:id});
-    const size = sizeProduct.map(item => item.size);
-    const colorProduct = await Color.find({productId:id});
-    const color = colorProduct.map(item => item.color);
+    const sizeProduct = await Size.find({ productId: id });
+    const size = sizeProduct.map((item) => item.size);
+    const colorProduct = await Color.find({ productId: id });
+    const color = colorProduct.map((item) => item.color);
     if (!product) {
       return res.status(403).json({ success: false, message: "Get failed!" });
     }
-    return res.json({ success: true, message: "Get successfully", product,size,color });
+    return res.json({
+      success: true,
+      message: "Get successfully",
+      product,
+      size,
+      color,
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ success: false, message: "Internal server" });
@@ -135,25 +139,36 @@ const getByIdProduct = async (req, res) => {
 
 const getByTypeProduct = async (req, res) => {
   const typeId = req.params.id;
-  const limit = req.query.limit || 5;
-  const page = req.query.page || 1
+  const limit = req.query.limit || 8;
+  const page = req.query.page || 1;
   const skip = (page - 1) * limit;
   if (!typeId) {
-    return res.status(403).json({ success: false, message: "Not found id" });
+    const allProduct = await Product.find().skip(skip).limit(limit);
+    const totalAll = await Product.countDocuments()
+    return res.status(403).json({ success: true, products:allProduct, skip, total:totalAll });
   }
   try {
-    const products = await Product.find({ typeId }).populate("typeId").skip(skip).limit(limit);
-    const total = await Product.countDocuments({typeId});
+    const products = await Product.find({ typeId })
+      .populate("typeId")
+      .skip(skip)
+      .limit(limit);
+    const total = await Product.countDocuments({ typeId });
     if (!products) {
       return res.status(403).json({ success: false, message: "Get failed!" });
     }
-    return res.json({ success: true, message: "Get successfully", products, typeId,skip, total });
+    return res.json({
+      success: true,
+      message: "Get successfully",
+      products,
+      typeId,
+      skip,
+      total,
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ success: false, message: "Internal server" });
   }
 };
-
 
 module.exports = {
   addProduct,
