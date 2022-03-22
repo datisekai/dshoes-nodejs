@@ -144,8 +144,10 @@ const getByTypeProduct = async (req, res) => {
   const skip = (page - 1) * limit;
   if (!typeId) {
     const allProduct = await Product.find().skip(skip).limit(limit);
-    const totalAll = await Product.countDocuments()
-    return res.status(403).json({ success: true, products:allProduct, skip, total:totalAll });
+    const totalAll = await Product.countDocuments();
+    return res
+      .status(403)
+      .json({ success: true, products: allProduct, skip, total: totalAll });
   }
   try {
     const products = await Product.find({ typeId })
@@ -170,10 +172,38 @@ const getByTypeProduct = async (req, res) => {
   }
 };
 
+const getAllProduct = async (req, res) => {
+  const limit = req.query.limit || 8;
+  const page = req.query.page || 1;
+  const skip = (page - 1) * limit;
+
+  try {
+    const products = await Product.find()
+      .populate("typeId")
+      .skip(skip)
+      .limit(limit);
+    const total = await Product.countDocuments();
+    if (!products) {
+      return res.status(403).json({ success: false, message: "Get failed!" });
+    }
+    return res.json({
+      success: true,
+      message: "Get successfully",
+      products,
+      skip,
+      total,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: "Internal server" });
+  }
+};
+
 module.exports = {
   addProduct,
   deleteProduct,
   updateProduct,
   getByIdProduct,
   getByTypeProduct,
+  getAllProduct
 };

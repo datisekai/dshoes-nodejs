@@ -12,12 +12,14 @@ const {
   updateProduct,
   getByIdProduct,
   getByTypeProduct,
+  getAllProduct
 } = require("../Controller/ProductController");
 const { addSize, deleteSize } = require("../Controller/SizeController");
 
 // them product moi
 /// api/products
 router.post("/", isLogin, isExist, isManagerProduct, addProduct);
+router.get('/',getAllProduct)
 
 //xoa product
 // api/products/:id
