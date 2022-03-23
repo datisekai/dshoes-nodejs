@@ -46,7 +46,7 @@ const registerUser = async (req, res) => {
       {
         userId: newUser._id,
       },
-      process.env.SECRET_JWT
+      'datisekai'
     );
     return res.json({
       success: true,
@@ -86,7 +86,7 @@ const loginUser = async (req, res) => {
       {
         userId: user._id,
       },
-      process.env.SECRET_JWT
+      'datisekai'
     );
     return res.json({ success: true, token});
   } catch (err) {

@@ -11,7 +11,7 @@ const verifyToken = async(req, res, next) => {
       message: "You must login!",
     });
   try {
-    const detoken = jwt.verify(token, process.env.SECRET_JWT);
+    const detoken = jwt.verify(token, 'datisekai');
     req.userId = detoken.userId;
     const roleUser = await DetailUser.find({
       userId: detoken.userId,
