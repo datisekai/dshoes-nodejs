@@ -2,6 +2,7 @@ const Product = require("../models/Product");
 const Type = require("../models/Type");
 const Size = require("../models/DetailSize");
 const Color = require("../models/DetailColor");
+const { type } = require("../utils/String");
 
 const addProduct = async (req, res) => {
   const { name, image, prices, desc, type, size, color } = req.body;
@@ -199,11 +200,188 @@ const getAllProduct = async (req, res) => {
   }
 };
 
+const filterProducts = async (req, res) => {
+  const { to, from, kind, text } = req.body;
+  const limit = req.query.limit || 8;
+  const page = req.query.page || 1;
+  const skip = (page - 1) * limit;
+  let results, total;
+  if (!to && !from && !kind && !text) {
+    results = await Product.find().skip(skip).limit(limit);
+    total = (await Product.find()).length;
+  }
+  if (!to && !from && !kind && text) {
+    results = await Product.find({ $text: { $search: text } })
+      .skip(skip)
+      .limit(limit);
+    total = (await Product.find({ $text: { $search: text } })).length;
+  }
+  if (!to && !from && !text && kind) {
+    results = await Product.find({ typeId: kind }).skip(skip).limit(limit);
+    total = (await Product.find({ typeId: kind })).length;
+  }
+  if (!to && !from && text && kind) {
+    results = await Product.find({
+      $text: { $search: text },
+      typeId: kind,
+    })
+      .skip(skip)
+      .limit(limit);
+    total = (
+      await Product.find({
+        $text: { $search: text },
+        typeId: kind,
+      })
+    ).length;
+  }
+  if (!text && !kind && !to && from) {
+    results = await Product.find({ prices: { $lt: from } })
+      .skip(skip)
+      .limit(limit);
+    total = (await Product.find({ prices: { $lt: from } })).length;
+  }
+  if (!text && !kind && to && from) {
+    results = await Product.find({ prices: { $gte: to, $lt: from } })
+      .skip(skip)
+      .limit(limit);
+    total = (await Product.find({ prices: { $gte: to, $lt: from } })).length;
+  }
+  if (!text && !kind && !from && to) {
+    results = await Product.find({ prices: { $gte: to } })
+      .skip(skip)
+      .limit(limit);
+    total = (await Product.find({ prices: { $gte: to } })).length;
+  }
+  if (!text && kind && !to && from) {
+    results = await Product.find({ prices: { $lt: from }, typeId: kind })
+      .skip(skip)
+      .limit(limit);
+    total = (await Product.find({ prices: { $lt: from }, typeId: kind }))
+      .length;
+  }
+  if (!text && kind && to && from) {
+    results = await Product.find({
+      prices: { $gte: to, $lt: from },
+      typeId: kind,
+    })
+      .skip(skip)
+      .limit(limit);
+    total = (
+      await Product.find({
+        prices: { $gte: to, $lt: from },
+        typeId: kind,
+      })
+    ).length;
+  }
+  if (!text && kind && !from && to) {
+    results = await Product.find({ prices: { $gte: to }, typeId: kind })
+      .skip(skip)
+      .limit(limit);
+    total = (await Product.find({ prices: { $gte: to }, typeId: kind })).length;
+  }
+
+  if (text && !kind && !to && from) {
+    results = await Product.find({
+      $text: { $search: text },
+      prices: { $lt: from },
+    })
+      .skip(skip)
+      .limit(limit);
+    total = (
+      await Product.find({
+        $text: { $search: text },
+        prices: { $lt: from },
+      })
+    ).length;
+  }
+  if (text && !kind && to && !from) {
+    results = await Product.find({
+      $text: { $search: text },
+      prices: { $gte: to },
+    })
+      .skip(skip)
+      .limit(limit);
+    total = (
+      await Product.find({
+        $text: { $search: text },
+        prices: { $gte: to },
+      })
+    ).length;
+  }
+  if (text && !kind && to && from) {
+    results = await Product.find({
+      $text: { $search: text },
+      prices: { $gte: to, $lt: from },
+    })
+      .skip(skip)
+      .limit(limit);
+    total = (
+      await Product.find({
+        $text: { $search: text },
+        prices: { $gte: to, $lt: from },
+      })
+    ).length;
+  }
+  if (text && kind && !to && from) {
+    results = await Product.find({
+      $text: { $search: text },
+      typeId: kind,
+      prices: { $lt: from },
+    })
+      .skip(skip)
+      .limit(limit);
+    total = (
+      await Product.find({
+        $text: { $search: text },
+        typeId: kind,
+        prices: { $lt: from },
+      })
+    ).length;
+  }
+  if (text && kind && to && !from) {
+    results = await Product.find({
+      $text: { $search: text },
+      typeId: kind,
+      prices: { $gte: to },
+    })
+      .skip(skip)
+      .limit(limit);
+    total = (
+      await Product.find({
+        $text: { $search: text },
+        typeId: kind,
+        prices: { $gte: to },
+      })
+    ).length;
+  }
+  if (text && kind && to && from) {
+    results = await Product.find({
+      $text: { $search: text },
+      typeId: kind,
+      prices: { $lt: from, $gte: to },
+    })
+      .skip(skip)
+      .limit(limit);
+    total = (
+      await Product.find({
+        $text: { $search: text },
+        typeId: kind,
+        prices: { $lt: from, $gte: to },
+      })
+    ).length;
+  }
+  if (results) {
+    return res.json({ success: true, results, skip, total });
+  }
+  return res.status(401).json({ success: false, results: [] });
+};
+
 module.exports = {
   addProduct,
   deleteProduct,
   updateProduct,
   getByIdProduct,
   getByTypeProduct,
-  getAllProduct
+  getAllProduct,
+  filterProducts,
 };

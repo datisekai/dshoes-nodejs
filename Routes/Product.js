@@ -12,7 +12,8 @@ const {
   updateProduct,
   getByIdProduct,
   getByTypeProduct,
-  getAllProduct
+  getAllProduct,
+  filterProducts
 } = require("../Controller/ProductController");
 const { addSize, deleteSize } = require("../Controller/SizeController");
 
@@ -65,5 +66,8 @@ router.delete(
   isManagerProduct,
   deleteType
 );
+
+//search
+router.post('/search',filterProducts)
 
 module.exports = router;
