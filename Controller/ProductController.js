@@ -206,15 +206,14 @@ const filterProducts = async (req, res) => {
   const page = req.query.page || 1;
   const skip = (page - 1) * limit;
   let results, total;
+  const searchPattern = new RegExp(text,'i')
   if (!to && !from && !kind && !text) {
     results = await Product.find().skip(skip).limit(limit);
     total = (await Product.find()).length;
   }
   if (!to && !from && !kind && text) {
-    results = await Product.find({ $text: { $search: text } })
-      .skip(skip)
-      .limit(limit);
-    total = (await Product.find({ $text: { $search: text } })).length;
+    results = await Product.find({name:searchPattern});
+    total = (await Product.find({name:searchPattern})).length;
   }
   if (!to && !from && !text && kind) {
     results = await Product.find({ typeId: kind }).skip(skip).limit(limit);
@@ -222,14 +221,14 @@ const filterProducts = async (req, res) => {
   }
   if (!to && !from && text && kind) {
     results = await Product.find({
-      $text: { $search: text },
+      name:searchPattern,
       typeId: kind,
     })
       .skip(skip)
       .limit(limit);
     total = (
       await Product.find({
-        $text: { $search: text },
+        name:searchPattern,
         typeId: kind,
       })
     ).length;
@@ -282,49 +281,49 @@ const filterProducts = async (req, res) => {
 
   if (text && !kind && !to && from) {
     results = await Product.find({
-      $text: { $search: text },
+      name:searchPattern,
       prices: { $lt: from },
     })
       .skip(skip)
       .limit(limit);
     total = (
       await Product.find({
-        $text: { $search: text },
+        name:searchPattern,
         prices: { $lt: from },
       })
     ).length;
   }
   if (text && !kind && to && !from) {
     results = await Product.find({
-      $text: { $search: text },
+      name:searchPattern,
       prices: { $gte: to },
     })
       .skip(skip)
       .limit(limit);
     total = (
       await Product.find({
-        $text: { $search: text },
+        name:searchPattern,
         prices: { $gte: to },
       })
     ).length;
   }
   if (text && !kind && to && from) {
     results = await Product.find({
-      $text: { $search: text },
+     name:searchPattern,
       prices: { $gte: to, $lt: from },
     })
       .skip(skip)
       .limit(limit);
     total = (
       await Product.find({
-        $text: { $search: text },
+       name:searchPattern,
         prices: { $gte: to, $lt: from },
       })
     ).length;
   }
   if (text && kind && !to && from) {
     results = await Product.find({
-      $text: { $search: text },
+     name:searchPattern,
       typeId: kind,
       prices: { $lt: from },
     })
@@ -332,7 +331,7 @@ const filterProducts = async (req, res) => {
       .limit(limit);
     total = (
       await Product.find({
-        $text: { $search: text },
+       name:searchPattern,
         typeId: kind,
         prices: { $lt: from },
       })
@@ -340,7 +339,7 @@ const filterProducts = async (req, res) => {
   }
   if (text && kind && to && !from) {
     results = await Product.find({
-      $text: { $search: text },
+     name:searchPattern,
       typeId: kind,
       prices: { $gte: to },
     })
@@ -348,7 +347,7 @@ const filterProducts = async (req, res) => {
       .limit(limit);
     total = (
       await Product.find({
-        $text: { $search: text },
+       name:searchPattern,
         typeId: kind,
         prices: { $gte: to },
       })
@@ -356,7 +355,7 @@ const filterProducts = async (req, res) => {
   }
   if (text && kind && to && from) {
     results = await Product.find({
-      $text: { $search: text },
+     name:searchPattern,
       typeId: kind,
       prices: { $lt: from, $gte: to },
     })
@@ -364,7 +363,7 @@ const filterProducts = async (req, res) => {
       .limit(limit);
     total = (
       await Product.find({
-        $text: { $search: text },
+       name:searchPattern,
         typeId: kind,
         prices: { $lt: from, $gte: to },
       })

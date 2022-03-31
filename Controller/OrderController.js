@@ -24,7 +24,7 @@ const addOrder = async (req, res) => {
     for (const index in products) {
       const newDetail = new DetailOrder({
         orderId: newOrder._id,
-        productId: products[index].id,
+        productId: products[index].productId,
         size: products[index].size,
         color: products[index].color,
         quantify: products[index].quantify,
@@ -65,7 +65,7 @@ const addOrderFromCustomer = async (req, res) => {
     for (const index in products) {
       const newDetail = new DetailOrder({
         orderId: newOrder._id,
-        productId: products[index].id,
+        productId: products[index].productId,
         size: products[index].size,
         color: products[index].color,
         quantify: products[index].quantify,
