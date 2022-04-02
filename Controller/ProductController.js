@@ -378,7 +378,7 @@ const filterProducts = async (req, res) => {
 const getMaxProduct = async (req, res) => {
   try {
     const products = await Product.find().sort("-prices");
-    return res.status(401).json({ success: false, max:products[0].prices });
+    return res.status(401).json({ success: true, max:products[0].prices });
   } catch (err) {
     return res.status(401).json({ success: false, max: 0 });
   }
