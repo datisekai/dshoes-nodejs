@@ -13,7 +13,8 @@ const {
   getByIdProduct,
   getByTypeProduct,
   getAllProduct,
-  filterProducts
+  filterProducts,
+  getMaxProduct
 } = require("../Controller/ProductController");
 const { addSize, deleteSize } = require("../Controller/SizeController");
 
@@ -21,6 +22,7 @@ const { addSize, deleteSize } = require("../Controller/SizeController");
 /// api/products
 router.post("/", isLogin, isExist, isManagerProduct, addProduct);
 router.get('/',getAllProduct)
+router.get('/max',getMaxProduct)
 
 //xoa product
 // api/products/:id

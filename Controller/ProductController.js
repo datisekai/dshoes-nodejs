@@ -206,14 +206,14 @@ const filterProducts = async (req, res) => {
   const page = req.query.page || 1;
   const skip = (page - 1) * limit;
   let results, total;
-  const searchPattern = new RegExp(text,'i')
+  const searchPattern = new RegExp(text, "i");
   if (!to && !from && !kind && !text) {
     results = await Product.find().skip(skip).limit(limit);
     total = (await Product.find()).length;
   }
   if (!to && !from && !kind && text) {
-    results = await Product.find({name:searchPattern});
-    total = (await Product.find({name:searchPattern})).length;
+    results = await Product.find({ name: searchPattern });
+    total = (await Product.find({ name: searchPattern })).length;
   }
   if (!to && !from && !text && kind) {
     results = await Product.find({ typeId: kind }).skip(skip).limit(limit);
@@ -221,14 +221,14 @@ const filterProducts = async (req, res) => {
   }
   if (!to && !from && text && kind) {
     results = await Product.find({
-      name:searchPattern,
+      name: searchPattern,
       typeId: kind,
     })
       .skip(skip)
       .limit(limit);
     total = (
       await Product.find({
-        name:searchPattern,
+        name: searchPattern,
         typeId: kind,
       })
     ).length;
@@ -281,49 +281,49 @@ const filterProducts = async (req, res) => {
 
   if (text && !kind && !to && from) {
     results = await Product.find({
-      name:searchPattern,
+      name: searchPattern,
       prices: { $lt: from },
     })
       .skip(skip)
       .limit(limit);
     total = (
       await Product.find({
-        name:searchPattern,
+        name: searchPattern,
         prices: { $lt: from },
       })
     ).length;
   }
   if (text && !kind && to && !from) {
     results = await Product.find({
-      name:searchPattern,
+      name: searchPattern,
       prices: { $gte: to },
     })
       .skip(skip)
       .limit(limit);
     total = (
       await Product.find({
-        name:searchPattern,
+        name: searchPattern,
         prices: { $gte: to },
       })
     ).length;
   }
   if (text && !kind && to && from) {
     results = await Product.find({
-     name:searchPattern,
+      name: searchPattern,
       prices: { $gte: to, $lt: from },
     })
       .skip(skip)
       .limit(limit);
     total = (
       await Product.find({
-       name:searchPattern,
+        name: searchPattern,
         prices: { $gte: to, $lt: from },
       })
     ).length;
   }
   if (text && kind && !to && from) {
     results = await Product.find({
-     name:searchPattern,
+      name: searchPattern,
       typeId: kind,
       prices: { $lt: from },
     })
@@ -331,7 +331,7 @@ const filterProducts = async (req, res) => {
       .limit(limit);
     total = (
       await Product.find({
-       name:searchPattern,
+        name: searchPattern,
         typeId: kind,
         prices: { $lt: from },
       })
@@ -339,7 +339,7 @@ const filterProducts = async (req, res) => {
   }
   if (text && kind && to && !from) {
     results = await Product.find({
-     name:searchPattern,
+      name: searchPattern,
       typeId: kind,
       prices: { $gte: to },
     })
@@ -347,7 +347,7 @@ const filterProducts = async (req, res) => {
       .limit(limit);
     total = (
       await Product.find({
-       name:searchPattern,
+        name: searchPattern,
         typeId: kind,
         prices: { $gte: to },
       })
@@ -355,7 +355,7 @@ const filterProducts = async (req, res) => {
   }
   if (text && kind && to && from) {
     results = await Product.find({
-     name:searchPattern,
+      name: searchPattern,
       typeId: kind,
       prices: { $lt: from, $gte: to },
     })
@@ -363,7 +363,7 @@ const filterProducts = async (req, res) => {
       .limit(limit);
     total = (
       await Product.find({
-       name:searchPattern,
+        name: searchPattern,
         typeId: kind,
         prices: { $lt: from, $gte: to },
       })
@@ -375,6 +375,15 @@ const filterProducts = async (req, res) => {
   return res.status(401).json({ success: false, results: [] });
 };
 
+const getMaxProduct = async (req, res) => {
+  try {
+    const products = await Product.find().sort("-prices");
+    return res.status(401).json({ success: false, max:products[0].prices });
+  } catch (err) {
+    return res.status(401).json({ success: false, max: 0 });
+  }
+};
+
 module.exports = {
   addProduct,
   deleteProduct,
@@ -383,4 +392,5 @@ module.exports = {
   getByTypeProduct,
   getAllProduct,
   filterProducts,
+  getMaxProduct,
 };
