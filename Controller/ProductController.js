@@ -3,6 +3,7 @@ const Type = require("../models/Type");
 const Size = require("../models/DetailSize");
 const Color = require("../models/DetailColor");
 const { type } = require("../utils/String");
+const DetailColor = require("../models/DetailColor");
 
 const addProduct = async (req, res) => {
   const { name, image, prices, desc, type, size, color } = req.body;
@@ -83,8 +84,8 @@ const updateProduct = async (req, res) => {
   if (!productId) {
     return res.status(401).json({ success: false, message: "Not found id" });
   }
-  const { name, image, prices, desc, type } = req.body;
-  if (!name || !image || !prices || !desc || !type) {
+  const { name, image, prices, desc, type, color, size } = req.body;
+  if (!name || !image || !prices || !desc || !type || !color || !size) {
     return res
       .status(403)
       .json({ success: false, message: "Please enter full field!" });
@@ -101,10 +102,35 @@ const updateProduct = async (req, res) => {
     update = await Product.findOneAndUpdate({ _id: productId }, update, {
       new: true,
     });
+
+    await Size.deleteMany({ productId });
+    await Color.deleteMany({ productId });
+
+    for (const index in size) {
+      const newSize = new Size({
+        productId: productId,
+        size: size[index],
+      });
+      await newSize.save();
+    }
+    for (const index in color) {
+      const newColor = new Color({
+        productId: productId,
+        color: color[index],
+      });
+      await newColor.save();
+    }
+
     if (!update) {
       return res.status(401).json({ success: false, message: "Update failed" });
     }
-    return res.json({ success: true, message: "Update successfull", update });
+    return res.json({
+      success: true,
+      message: "Update successfull",
+      update,
+      size,
+      color,
+    });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ success: false, message: "Internal server" });
@@ -378,7 +404,7 @@ const filterProducts = async (req, res) => {
 const getMaxProduct = async (req, res) => {
   try {
     const products = await Product.find().sort("-prices");
-    return res.json({ success: true, max:products[0].prices });
+    return res.json({ success: true, max: products[0].prices });
   } catch (err) {
     return res.status(401).json({ success: false, max: 0 });
   }
