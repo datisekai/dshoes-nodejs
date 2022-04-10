@@ -84,7 +84,7 @@ const updateProduct = async (req, res) => {
   if (!productId) {
     return res.status(401).json({ success: false, message: "Not found id" });
   }
-  const { name, image, prices, desc, type, color, size } = req.body;
+  const { name, image, prices, desc, type, color, size,status } = req.body;
   if (!name || !image || !prices || !desc || !type || !color || !size) {
     return res
       .status(403)
@@ -97,6 +97,7 @@ const updateProduct = async (req, res) => {
       prices,
       desc,
       typeId: type,
+      status
     };
 
     update = await Product.findOneAndUpdate({ _id: productId }, update, {

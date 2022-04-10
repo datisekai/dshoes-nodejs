@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const argon2 = require("argon2");
 const Users = require("../models/Users");
 const DetailUser = require("../models/DetailUser");
-const { findOneAndDelete, deleteMany } = require("../models/DetailUser");
+const { findOneAndUpdate } = require("../models/Users");
 
 const registerUser = async (req, res) => {
   const { email, password, phoneNumber } = req.body;
@@ -24,7 +24,7 @@ const registerUser = async (req, res) => {
     const newUser = new Users({
       email,
       password: hashPassword,
-      phoneNumber
+      phoneNumber,
     });
     await newUser.save();
 
@@ -46,7 +46,7 @@ const registerUser = async (req, res) => {
       {
         userId: newUser._id,
       },
-      'datisekai'
+      "datisekai"
     );
     return res.json({
       success: true,
@@ -74,7 +74,7 @@ const loginUser = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Incorrect email or password" });
     }
-    
+
     const passwordValid = await argon2.verify(user.password, password);
     if (!passwordValid) {
       return res
@@ -86,9 +86,9 @@ const loginUser = async (req, res) => {
       {
         userId: user._id,
       },
-      'datisekai'
+      "datisekai"
     );
-    return res.json({ success: true, token});
+    return res.json({ success: true, token });
   } catch (err) {
     return res.status(500).json({ success: false, message: "Internal server" });
   }
@@ -103,7 +103,7 @@ const getInfoUser = async (req, res) => {
     });
   const user = await Users.findOne({ _id: userID }).select("-password");
   const rolesUser = await DetailUser.find({ userId: userID });
-  const onlyRoles = rolesUser.map(item => item.roleId)
+  const onlyRoles = rolesUser.map((item) => item.roleId);
 
   if (!user) {
     return res.send(400).json({
@@ -114,21 +114,28 @@ const getInfoUser = async (req, res) => {
   return res.status(200).json({
     success: true,
     user,
-    rolesUser:onlyRoles,
+    rolesUser: onlyRoles,
   });
 };
 
 const getAllUser = async (req, res) => {
   const userId = req.userId;
+  const limit = req.query.limit || 8;
+  const page = req.query.page || 1;
+  const skip = (page - 1) * limit;
   if (!userId)
     return res.send(400).json({
       success: false,
       message: "Incorrect token",
     });
-  const users = await Users.find();
+  const users = await Users.find().skip(skip).limit(limit);
+  const totalAll = await Users.countDocuments();
   return res.status(200).json({
     success: true,
     users,
+    total: totalAll,
+    skip,
+    page,
   });
 };
 
@@ -219,7 +226,10 @@ const deleteRoleUser = async (req, res) => {
   const id = req.params.id;
   const { roleId } = req.body;
   try {
-    const deleteUser = await DetailUser.findOneAndDelete({ userId: id, roleId:roleId });
+    const deleteUser = await DetailUser.findOneAndDelete({
+      userId: id,
+      roleId: roleId,
+    });
     if (!deleteUser) {
       return res.status(403).json({
         success: false,
@@ -235,6 +245,30 @@ const deleteRoleUser = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  const id = req.params.id;
+  const { email, phoneNumber, password } = req.body;
+  const hashPassword = await argon2.hash(password);
+  try {
+    const isFound = await Users.findById({ _id: id });
+    if (isFound) {
+      const newUser = await Users.findOneAndUpdate(
+        { _id: id },
+        {
+          email,
+          phoneNumber,
+          password:hashPassword,
+        },
+        { new: true }
+      );
+      return res.json({ success: true, user: newUser });
+    }
+    return res.status(404).json({ success: false, message: "Error ID" });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: "Internal server" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -244,4 +278,5 @@ module.exports = {
   deleteUser,
   addRoleUser,
   deleteRoleUser,
+  updateUser,
 };

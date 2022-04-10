@@ -13,7 +13,8 @@ const {
   getRoleUser,
   deleteUser,
   addRoleUser,
-  deleteRoleUser
+  deleteRoleUser,
+  updateUser
 } = require("../Controller/UserController");
 // /api/auth
 router.get("/", (req, res) => res.send("Datisekai get auth successfull"));
@@ -34,6 +35,8 @@ router.get("/user", isLogin, getInfoUser);
 
 router.get("/user/:id", isLogin, getRoleUser);
 //header token, id là id user cần get
+
+router.put('/user/:id',isLogin, isManagerUser, updateUser)
 
 // /api/auth/users
 

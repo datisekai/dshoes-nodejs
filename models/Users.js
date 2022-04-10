@@ -7,13 +7,6 @@ const UserSchema = new Schema({
     email:typeString,
     password:typeString,
     phoneNumber:{type:String},
-    roleId:{
-        type:Number, default:0
-    },
-    createdAt:{
-        type:Date,
-        default:(new Date()).toISOString(),
-    }
-})
+},{timestamps:true})
 
 module.exports = mongoose.model('users',UserSchema)
