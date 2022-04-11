@@ -182,9 +182,13 @@ const getAllOrderByToken = async (req, res) => {
 };
 
 const getAllOrderByAdmin = async (req, res) => {
+  const limit = req.query.limit || 8;
+  const page = req.query.page || 1;
+  const skip = (page - 1) * limit; 
   try {
-    const orders = await Order.find();
-    return res.json({ success: true, orders });
+    const orders = await Order.find().limit(limit).skip(skip);
+    const total = await Order.countDocuments()
+    return res.json({ success: true, orders,limit, page, skip,total });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ success: false, message: "Internal server" });
