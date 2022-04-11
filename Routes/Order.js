@@ -41,6 +41,6 @@ router.get("/detail/:id", isLogin, getDetailById);
 router.get("/", isLogin, getAllOrderByToken);
 
 //get al order by admin
-router.get("/admin", isLogin, isExist, isManagerComments, getAllOrderByAdmin);
+router.get("/admin/all", isLogin, isExist, isManagerOrder, getAllOrderByAdmin);
 
 module.exports = router;
