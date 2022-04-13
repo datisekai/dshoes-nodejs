@@ -188,7 +188,7 @@ const getAllOrderByAdmin = async (req, res) => {
   try {
     const orders = await Order.find().limit(limit).skip(skip);
     const total = await Order.countDocuments()
-    return res.json({ success: true, orders,limit, page, skip,total });
+    return res.json({ success: true, orders,limit, page, skip,total,roleId:2 });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ success: false, message: "Internal server" });

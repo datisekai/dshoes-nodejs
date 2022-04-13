@@ -220,6 +220,7 @@ const getAllProduct = async (req, res) => {
       products,
       skip,
       total,
+      roleId:1
     });
   } catch (err) {
     console.log(err);

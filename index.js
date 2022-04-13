@@ -12,6 +12,8 @@ const commentRouter = require('./Routes/Comment')
 
 const orderRouter = require('./Routes/Order')
 
+const roleCateRouter = require('./Routes/Role_Cate')
+
 const cors = require("cors");
 
 require("dotenv").config();
@@ -49,7 +51,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/products", productRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/orders",orderRouter)
-
+app.use('/api/role_cate',roleCateRouter)
 const PORT = process.env.PORT || 5098;
 
 app.listen(PORT, () => console.log(`Server start on port ${PORT}`));

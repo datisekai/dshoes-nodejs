@@ -136,6 +136,7 @@ const getAllUser = async (req, res) => {
     total: totalAll,
     skip,
     page,
+    roleId:0
   });
 };
 

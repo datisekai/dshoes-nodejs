@@ -14,7 +14,7 @@ const OrderSchema = new Schema(
       type: Number,
       default: 2,
     },
-    phoneNumber:typeNumber
+    phoneNumber:typeString
   },
   {
     timestamps: true,
