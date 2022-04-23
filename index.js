@@ -13,6 +13,7 @@ const commentRouter = require('./Routes/Comment')
 const orderRouter = require('./Routes/Order')
 
 const roleCateRouter = require('./Routes/Role_Cate')
+const statisticRouter = require('./Routes/Statistic')
 
 const cors = require("cors");
 
@@ -52,7 +53,7 @@ app.use("/api/products", productRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/orders",orderRouter)
 app.use('/api/role_cate',roleCateRouter)
+app.use('/api/statistic',statisticRouter)
 const PORT = process.env.PORT || 5098;
 
 app.listen(PORT, () => console.log(`Server start on port ${PORT}`));
-console.log(mongoose.Types.ObjectId.isValid('622d953bf45eb0e2e41aab55'))
