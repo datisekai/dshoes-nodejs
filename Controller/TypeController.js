@@ -1,5 +1,5 @@
 const Type = require("../models/Type");
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const addType = async (req, res) => {
   const { type } = req.body;
@@ -8,14 +8,30 @@ const addType = async (req, res) => {
   }
 
   try {
-   
+    const isFound = await Type.findOne({ type: type.toLowerCase() });
+    console.log(isFound);
+    if (!isFound) {
+      const newType = new Type({
+        type: type.toLowerCase(),
+      });
 
-    const newType = new Type({
-      type: type.toLowerCase(),
-    });
-
-    await newType.save();
-    return res.json({ success: true, message: "Add type successfully!",newType });
+      await newType.save();
+      return res.json({
+        success: true,
+        message: "Add type successfully!",
+        newType,
+      });
+    } else {
+      const newType = await Type.findOneAndUpdate(
+        { type: type.toLowerCase() },
+        { display: true }
+      );
+      return res.json({
+        success: true,
+        message: "Add type successfully!",
+        newType,
+      });
+    }
   } catch (err) {
     console.log(err);
     return res.status(403).json({ success: false, message: "Internal server" });
@@ -25,28 +41,28 @@ const addType = async (req, res) => {
 const deleteType = async (req, res) => {
   const typeId = req.params.id;
   try {
-    const type = await Type.findOneAndDelete({ _id: typeId });
+    const type = await Type.findOneAndUpdate(
+      { _id: typeId },
+      { display: false }
+    );
     if (!type) {
       return res
         .status(401)
         .json({ success: true, message: "Not found type!" });
     }
-    return res
-      .status(400)
-      .json({ success: true, message: "delete successfully!" });
+    return res.json({ success: true, message: "delete successfully!" });
   } catch (err) {
     return res.status(403).json({ success: false, message: "Internal server" });
   }
 };
 
-const getAllType = async(req, res) => {
-  try{
+const getAllType = async (req, res) => {
+  try {
     const types = await Type.find();
-    return res.json({success:true, types})
-  }catch(err)
-  {
+    return res.json({ success: true, types });
+  } catch (err) {
     return res.status(403).json({ success: false, message: "Internal server" });
   }
-}
+};
 
-module.exports = { addType, deleteType,getAllType };
+module.exports = { addType, deleteType, getAllType };

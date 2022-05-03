@@ -12,9 +12,21 @@ const groupBy = (items, key) =>
   );
 
 const getBenefitAllProduct = async (req, res) => {
+  const { start, end } = req.body;
   try {
+    let orderTime = [];
     const orderPaid = await Order.find({ status: 0 }); //loc hoa don da ban
-    const orderId = orderPaid.map((item) => item._id); // lay orderid
+    if (start && end) {
+      orderTime = orderPaid.filter((item) => {
+        const createdAt = new Date(item.createdAt).getTime();
+        const begin = new Date(start).getTime();
+        const finish = new Date(end).getTime();
+        return createdAt >= begin && createdAt <= finish;
+      });
+    } else {
+      orderTime = orderPaid;
+    }
+    const orderId = orderTime.map((item) => item._id); // lay orderid
     const detailPaid = await DetailOrder.find({ orderId: { $in: orderId } }); //tim orderid trong detailOrder
     let result = groupBy(detailPaid, "productId"); // groupby productId:[{}];
     let statistic = [];

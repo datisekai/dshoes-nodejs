@@ -3,7 +3,7 @@ const argon2 = require("argon2");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const isLogin = require("../middleware/isLogin");
-const isManagerUser = require('../middleware/isManagerUser')
+const isManagerUser = require("../middleware/isManagerUser");
 
 const {
   registerUser,
@@ -14,7 +14,8 @@ const {
   deleteUser,
   addRoleUser,
   deleteRoleUser,
-  updateUser
+  updateUser,
+  updateRoleUSer,
 } = require("../Controller/UserController");
 // /api/auth
 router.get("/", (req, res) => res.send("Datisekai get auth successfull"));
@@ -26,7 +27,7 @@ router.post("/register", registerUser);
 
 // /api/auth/login
 router.post("/login", loginUser);
-// body require (email,password) 
+// body require (email,password)
 //return userId and token
 
 // /api/auth/user
@@ -36,7 +37,7 @@ router.get("/user", isLogin, getInfoUser);
 router.get("/user/:id", isLogin, getRoleUser);
 //header token, id là id user cần get
 
-router.put('/user/:id',isLogin, isManagerUser, updateUser)
+router.put("/user/:id", isLogin, isManagerUser, updateUser);
 
 // /api/auth/users
 
@@ -44,20 +45,19 @@ router.put('/user/:id',isLogin, isManagerUser, updateUser)
 //header token and token getall phải có roleId là 0
 // tk roleId 0 => bedatdz@gmail.com, bedatdz
 
-
-
 router.get("/users", isManagerUser, getAllUser);
-
 
 // /api/auth/user/:id
 router.delete("/user/:id", isManagerUser, deleteUser);
 // params userId delete, not body
 
 // /api/auth/user/user/role/:id
-router.post('/user/role/:id',isManagerUser,addRoleUser)
+router.post("/user/role/:id", isManagerUser, addRoleUser);
+
+router.put("/user/role/:id", isManagerUser, updateRoleUSer);
 // body: roleId cần add, nhớ check xem role mới này đã tồn tại trước đó hay chưa?;
 
-router.delete('/user/role/:id',isManagerUser,deleteRoleUser)
+router.delete("/user/role/:id", isManagerUser, deleteRoleUser);
 // body: roleId
 
 module.exports = router;

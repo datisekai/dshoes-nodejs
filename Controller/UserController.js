@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 const argon2 = require("argon2");
 const Users = require("../models/Users");
 const DetailUser = require("../models/DetailUser");
-const { findOneAndUpdate } = require("../models/Users");
 
 const registerUser = async (req, res) => {
   const { email, password, phoneNumber } = req.body;
@@ -75,6 +74,11 @@ const loginUser = async (req, res) => {
         .json({ success: false, message: "Incorrect email or password" });
     }
 
+    if (!user.display) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Your account has been locked" });
+    }
     const passwordValid = await argon2.verify(user.password, password);
     if (!passwordValid) {
       return res
@@ -136,7 +140,7 @@ const getAllUser = async (req, res) => {
     total: totalAll,
     skip,
     page,
-    roleId:0
+    roleId: 0,
   });
 };
 
@@ -173,9 +177,11 @@ const deleteUser = async (req, res) => {
   //good
   try {
     const deleteCondition = { _id: id };
-    const deleteUser = await Users.findOneAndDelete(deleteCondition);
-    const deleteDetail = await DetailUser.deleteMany({ userId: id });
-    if (!deleteUser && !deleteDetail) {
+    const deleteUser = await Users.findByIdAndUpdate(deleteCondition, {
+      display: false,
+    });
+    // const deleteDetail = await DetailUser.deleteMany({ userId: id });
+    if (!deleteUser) {
       return res.send(400).json({
         success: false,
         message: "Delete failed",
@@ -217,6 +223,29 @@ const addRoleUser = async (req, res) => {
   }
 };
 
+const updateRoleUSer = async (req, res) => {
+  const { roles } = req.body;
+  const rolesArray = JSON.parse(roles);
+  const userId = req.params.id;
+  try {
+    if (roles) {
+      await DetailUser.deleteMany({ userId });
+      for (const index in rolesArray) {
+        console.log(rolesArray[index]);
+        const newRoles = new DetailUser({
+          userId,
+          roleId: rolesArray[index],
+        });
+        await newRoles.save();
+      }
+      return res.json({ success: true, roles });
+    }
+    return res.status(400).json({ success: false, message: "Not found roles" });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: "Internal server" });
+  }
+};
+
 const deleteRoleUser = async (req, res) => {
   const userId = req.userId;
   if (!userId)
@@ -248,7 +277,7 @@ const deleteRoleUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const id = req.params.id;
-  const { email, phoneNumber, password } = req.body;
+  const { email, phoneNumber, password, display } = req.body;
   const hashPassword = await argon2.hash(password);
   try {
     const isFound = await Users.findById({ _id: id });
@@ -258,7 +287,8 @@ const updateUser = async (req, res) => {
         {
           email,
           phoneNumber,
-          password:hashPassword,
+          password: hashPassword,
+          display: display || isFound.display,
         },
         { new: true }
       );
@@ -280,4 +310,5 @@ module.exports = {
   addRoleUser,
   deleteRoleUser,
   updateUser,
+  updateRoleUSer,
 };

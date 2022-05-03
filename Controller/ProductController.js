@@ -66,9 +66,12 @@ const deleteProduct = async (req, res) => {
     return res.status(401).json({ success: false, message: "Not found id" });
   }
   try {
-    const deleteProduct = await Product.findOneAndDelete({ _id: productId });
-    await Size.deleteMany({ productId });
-    await Color.deleteMany({ productId });
+    const deleteProduct = await Product.findByIdAndUpdate(
+      { _id: productId },
+      { status: 0 }
+    );
+    // await Size.deleteMany({ productId });
+    // await Color.deleteMany({ productId });
     if (!deleteProduct) {
       return res.status(401).json({ success: false, message: "Not found id" });
     }
@@ -84,7 +87,7 @@ const updateProduct = async (req, res) => {
   if (!productId) {
     return res.status(401).json({ success: false, message: "Not found id" });
   }
-  const { name, image, prices, desc, type, color, size,status } = req.body;
+  const { name, image, prices, desc, type, color, size, status } = req.body;
   if (!name || !image || !prices || !desc || !type || !color || !size) {
     return res
       .status(403)
@@ -97,7 +100,7 @@ const updateProduct = async (req, res) => {
       prices,
       desc,
       typeId: type,
-      status
+      status,
     };
 
     update = await Product.findOneAndUpdate({ _id: productId }, update, {
@@ -171,18 +174,20 @@ const getByTypeProduct = async (req, res) => {
   const page = req.query.page || 1;
   const skip = (page - 1) * limit;
   if (!typeId) {
-    const allProduct = await Product.find().skip(skip).limit(limit);
-    const totalAll = await Product.countDocuments();
+    const allProduct = await Product.find({ status: 1 })
+      .skip(skip)
+      .limit(limit);
+    const totalAll = await Product.countDocuments({ status: 1 });
     return res
       .status(403)
       .json({ success: true, products: allProduct, skip, total: totalAll });
   }
   try {
-    const products = await Product.find({ typeId })
+    const products = await Product.find({ typeId, status: 1 })
       .populate("typeId")
       .skip(skip)
       .limit(limit);
-    const total = await Product.countDocuments({ typeId });
+    const total = await Product.countDocuments({ typeId, status: 1 });
     if (!products) {
       return res.status(403).json({ success: false, message: "Get failed!" });
     }
@@ -206,11 +211,11 @@ const getAllProduct = async (req, res) => {
   const skip = (page - 1) * limit;
 
   try {
-    const products = await Product.find()
+    const products = await Product.find({ status: 1 })
       .populate("typeId")
       .skip(skip)
       .limit(limit);
-    const total = await Product.countDocuments();
+    const total = await Product.countDocuments({ status: 1 });
     if (!products) {
       return res.status(403).json({ success: false, message: "Get failed!" });
     }
@@ -220,7 +225,7 @@ const getAllProduct = async (req, res) => {
       products,
       skip,
       total,
-      roleId:1
+      roleId: 1,
     });
   } catch (err) {
     console.log(err);
