@@ -225,16 +225,14 @@ const addRoleUser = async (req, res) => {
 
 const updateRoleUSer = async (req, res) => {
   const { roles } = req.body;
-  const rolesArray = JSON.parse(roles);
   const userId = req.params.id;
   try {
     if (roles) {
       await DetailUser.deleteMany({ userId });
-      for (const index in rolesArray) {
-        console.log(rolesArray[index]);
+      for (const index in roles) {
         const newRoles = new DetailUser({
           userId,
-          roleId: rolesArray[index],
+          roleId: roles[index],
         });
         await newRoles.save();
       }

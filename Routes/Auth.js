@@ -61,3 +61,8 @@ router.delete("/user/role/:id", isManagerUser, deleteRoleUser);
 // body: roleId
 
 module.exports = router;
+
+// Login
+// Register
+// Get user
+// update user
