@@ -245,7 +245,9 @@ const filterProducts = async (req, res) => {
     total = (await Product.find()).length;
   }
   if (!to && !from && !kind && text) {
-    results = await Product.find({ name: searchPattern });
+    results = await Product.find({ name: searchPattern })
+      .skip(skip)
+      .limit(limit);
     total = (await Product.find({ name: searchPattern })).length;
   }
   if (!to && !from && !text && kind) {
