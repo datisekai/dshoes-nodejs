@@ -233,6 +233,34 @@ const getAllProduct = async (req, res) => {
   }
 };
 
+const getAllProductByAdmin = async (req, res) => {
+  const limit = req.query.limit || 8;
+  const page = req.query.page || 1;
+  const skip = (page - 1) * limit;
+
+  try {
+    const products = await Product.find()
+      .populate("typeId")
+      .skip(skip)
+      .limit(limit);
+    const total = await Product.countDocuments();
+    if (!products) {
+      return res.status(403).json({ success: false, message: "Get failed!" });
+    }
+    return res.json({
+      success: true,
+      message: "Get successfully",
+      products,
+      skip,
+      total,
+      roleId: 1,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: "Internal server" });
+  }
+};
+
 const filterProducts = async (req, res) => {
   const { to, from, kind, text } = req.body;
   const limit = req.query.limit || 8;
@@ -241,23 +269,26 @@ const filterProducts = async (req, res) => {
   let results, total;
   const searchPattern = new RegExp(text, "i");
   if (!to && !from && !kind && !text) {
-    results = await Product.find().skip(skip).limit(limit);
-    total = (await Product.find()).length;
+    results = await Product.find({ status: 1 }).skip(skip).limit(limit);
+    total = (await Product.find({ status: 1 })).length;
   }
   if (!to && !from && !kind && text) {
-    results = await Product.find({ name: searchPattern })
+    results = await Product.find({ name: searchPattern, status: 1 })
       .skip(skip)
       .limit(limit);
-    total = (await Product.find({ name: searchPattern })).length;
+    total = (await Product.find({ name: searchPattern, status: 1 })).length;
   }
   if (!to && !from && !text && kind) {
-    results = await Product.find({ typeId: kind }).skip(skip).limit(limit);
-    total = (await Product.find({ typeId: kind })).length;
+    results = await Product.find({ typeId: kind, status: 1 })
+      .skip(skip)
+      .limit(limit);
+    total = (await Product.find({ typeId: kind, status: 1 })).length;
   }
   if (!to && !from && text && kind) {
     results = await Product.find({
       name: searchPattern,
       typeId: kind,
+      status: 1,
     })
       .skip(skip)
       .limit(limit);
@@ -265,38 +296,46 @@ const filterProducts = async (req, res) => {
       await Product.find({
         name: searchPattern,
         typeId: kind,
+        status: 1,
       })
     ).length;
   }
   if (!text && !kind && !to && from) {
-    results = await Product.find({ prices: { $lt: from } })
+    results = await Product.find({ prices: { $lt: from }, status: 1 })
       .skip(skip)
       .limit(limit);
-    total = (await Product.find({ prices: { $lt: from } })).length;
+    total = (await Product.find({ prices: { $lt: from }, status: 1 })).length;
   }
   if (!text && !kind && to && from) {
-    results = await Product.find({ prices: { $gte: to, $lt: from } })
+    results = await Product.find({ prices: { $gte: to, $lt: from }, status: 1 })
       .skip(skip)
       .limit(limit);
-    total = (await Product.find({ prices: { $gte: to, $lt: from } })).length;
+    total = (await Product.find({ prices: { $gte: to, $lt: from }, status: 1 }))
+      .length;
   }
   if (!text && !kind && !from && to) {
-    results = await Product.find({ prices: { $gte: to } })
+    results = await Product.find({ prices: { $gte: to }, status: 1 })
       .skip(skip)
       .limit(limit);
-    total = (await Product.find({ prices: { $gte: to } })).length;
+    total = (await Product.find({ prices: { $gte: to }, status: 1 })).length;
   }
   if (!text && kind && !to && from) {
-    results = await Product.find({ prices: { $lt: from }, typeId: kind })
+    results = await Product.find({
+      prices: { $lt: from },
+      status: 1,
+      typeId: kind,
+    })
       .skip(skip)
       .limit(limit);
-    total = (await Product.find({ prices: { $lt: from }, typeId: kind }))
-      .length;
+    total = (
+      await Product.find({ prices: { $lt: from }, status: 1, typeId: kind })
+    ).length;
   }
   if (!text && kind && to && from) {
     results = await Product.find({
       prices: { $gte: to, $lt: from },
       typeId: kind,
+      status: 1,
     })
       .skip(skip)
       .limit(limit);
@@ -304,20 +343,28 @@ const filterProducts = async (req, res) => {
       await Product.find({
         prices: { $gte: to, $lt: from },
         typeId: kind,
+        status: 1,
       })
     ).length;
   }
   if (!text && kind && !from && to) {
-    results = await Product.find({ prices: { $gte: to }, typeId: kind })
+    results = await Product.find({
+      prices: { $gte: to },
+      typeId: kind,
+      status: 1,
+    })
       .skip(skip)
       .limit(limit);
-    total = (await Product.find({ prices: { $gte: to }, typeId: kind })).length;
+    total = (
+      await Product.find({ prices: { $gte: to }, typeId: kind, status: 1 })
+    ).length;
   }
 
   if (text && !kind && !to && from) {
     results = await Product.find({
       name: searchPattern,
       prices: { $lt: from },
+      status: 1,
     })
       .skip(skip)
       .limit(limit);
@@ -325,6 +372,7 @@ const filterProducts = async (req, res) => {
       await Product.find({
         name: searchPattern,
         prices: { $lt: from },
+        status: 1,
       })
     ).length;
   }
@@ -332,6 +380,7 @@ const filterProducts = async (req, res) => {
     results = await Product.find({
       name: searchPattern,
       prices: { $gte: to },
+      status: 1,
     })
       .skip(skip)
       .limit(limit);
@@ -339,6 +388,7 @@ const filterProducts = async (req, res) => {
       await Product.find({
         name: searchPattern,
         prices: { $gte: to },
+        status: 1,
       })
     ).length;
   }
@@ -346,6 +396,7 @@ const filterProducts = async (req, res) => {
     results = await Product.find({
       name: searchPattern,
       prices: { $gte: to, $lt: from },
+      status: 1,
     })
       .skip(skip)
       .limit(limit);
@@ -353,6 +404,7 @@ const filterProducts = async (req, res) => {
       await Product.find({
         name: searchPattern,
         prices: { $gte: to, $lt: from },
+        status: 1,
       })
     ).length;
   }
@@ -361,6 +413,7 @@ const filterProducts = async (req, res) => {
       name: searchPattern,
       typeId: kind,
       prices: { $lt: from },
+      status: 1,
     })
       .skip(skip)
       .limit(limit);
@@ -369,6 +422,7 @@ const filterProducts = async (req, res) => {
         name: searchPattern,
         typeId: kind,
         prices: { $lt: from },
+        status: 1,
       })
     ).length;
   }
@@ -377,6 +431,7 @@ const filterProducts = async (req, res) => {
       name: searchPattern,
       typeId: kind,
       prices: { $gte: to },
+      status: 1,
     })
       .skip(skip)
       .limit(limit);
@@ -385,6 +440,7 @@ const filterProducts = async (req, res) => {
         name: searchPattern,
         typeId: kind,
         prices: { $gte: to },
+        status: 1,
       })
     ).length;
   }
@@ -393,6 +449,7 @@ const filterProducts = async (req, res) => {
       name: searchPattern,
       typeId: kind,
       prices: { $lt: from, $gte: to },
+      status: 1,
     })
       .skip(skip)
       .limit(limit);
@@ -401,6 +458,7 @@ const filterProducts = async (req, res) => {
         name: searchPattern,
         typeId: kind,
         prices: { $lt: from, $gte: to },
+        status: 1,
       })
     ).length;
   }
@@ -420,6 +478,7 @@ const getMaxProduct = async (req, res) => {
 };
 
 module.exports = {
+  getAllProductByAdmin,
   addProduct,
   deleteProduct,
   updateProduct,

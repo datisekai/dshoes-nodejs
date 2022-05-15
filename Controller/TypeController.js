@@ -9,7 +9,6 @@ const addType = async (req, res) => {
 
   try {
     const isFound = await Type.findOne({ type: type.toLowerCase() });
-    console.log(isFound);
     if (!isFound) {
       const newType = new Type({
         type: type.toLowerCase(),
