@@ -15,6 +15,7 @@ const {
   getAllOrderByToken,
   getAllOrderByAdmin,
   addOrderFromCustomer,
+  getUserHandle,
 } = require("../Controller/OrderController");
 
 // add order
@@ -36,6 +37,8 @@ router.get("/:id", isLogin, getOrderById);
 
 //get detail by id
 router.get("/detail/:id", isLogin, getDetailById);
+
+router.get("/handle/:id", isLogin, isManagerOrder, getUserHandle);
 
 // get all order by token
 router.get("/", isLogin, getAllOrderByToken);

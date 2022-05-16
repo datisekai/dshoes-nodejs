@@ -2,8 +2,7 @@ const Product = require("../models/Product");
 const Type = require("../models/Type");
 const Size = require("../models/DetailSize");
 const Color = require("../models/DetailColor");
-const { type } = require("../utils/String");
-const DetailColor = require("../models/DetailColor");
+const DetailHandle = require("../models/DetailHandle");
 
 const addProduct = async (req, res) => {
   const { name, image, prices, desc, type, size, color } = req.body;
@@ -93,6 +92,9 @@ const updateProduct = async (req, res) => {
       .status(403)
       .json({ success: false, message: "Please enter full field!" });
   }
+
+  console.log(status);
+
   try {
     let update = {
       name,

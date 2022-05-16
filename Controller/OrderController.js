@@ -1,4 +1,5 @@
 const { response } = require("express");
+const DetailHandle = require("../models/DetailHandle");
 const DetailOrder = require("../models/DetailOrder");
 const Order = require("../models/Order");
 
@@ -103,12 +104,20 @@ const deleteOrder = async (req, res) => {
 };
 
 const updateOrder = async (req, res) => {
+  const adminId = req.userId;
   const id = req.params.id;
   const { userId, sum, address, phoneNumber, name, status } = req.body;
   if (!userId || !sum || !address || !phoneNumber || !name) {
     return res
       .status(401)
       .json({ success: false, message: "Please enter full field !" });
+  }
+
+  if (status == 1) {
+    return res.status(401).json({
+      success: false,
+      message: `Can not change status success -> waiting!`,
+    });
   }
   try {
     let updateOrder = {
@@ -122,6 +131,19 @@ const updateOrder = async (req, res) => {
     updateOrder = await Order.findOneAndUpdate({ _id: id }, updateOrder, {
       new: true,
     });
+
+    if (updateOrder && status == 0) {
+      const isExistHandle = await DetailHandle.findOne({
+        orderId: updateOrder._id,
+      });
+      if (!isExistHandle) {
+        const newDetailHandle = new DetailHandle({
+          orderId: updateOrder._id,
+          userId: adminId,
+        });
+        await newDetailHandle.save();
+      }
+    }
     if (!updateOrder) {
       return res.status(400).json({ success: false, message: "Update failed" });
     }
@@ -184,11 +206,35 @@ const getAllOrderByToken = async (req, res) => {
 const getAllOrderByAdmin = async (req, res) => {
   const limit = req.query.limit || 8;
   const page = req.query.page || 1;
-  const skip = (page - 1) * limit; 
+  const skip = (page - 1) * limit;
   try {
     const orders = await Order.find().limit(limit).skip(skip);
-    const total = await Order.countDocuments()
-    return res.json({ success: true, orders,limit, page, skip,total,roleId:2 });
+    const total = await Order.countDocuments();
+    return res.json({
+      success: true,
+      orders,
+      limit,
+      page,
+      skip,
+      total,
+      roleId: 2,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: "Internal server" });
+  }
+};
+
+const getUserHandle = async (req, res) => {
+  const orderId = req.params.id;
+  try {
+    const results = await DetailHandle.findOne({ orderId })
+      .populate("orderId")
+      .populate("userId");
+    if (!results) {
+      return res.status(400).json({ success: false, message: "Not found" });
+    }
+    return res.json({ success: true, staff: results });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ success: false, message: "Internal server" });
@@ -204,4 +250,5 @@ module.exports = {
   getAllOrderByAdmin,
   getAllOrderByToken,
   addOrderFromCustomer,
+  getUserHandle,
 };
