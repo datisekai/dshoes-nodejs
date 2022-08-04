@@ -10,8 +10,7 @@ const verifyToken = (req, res, next) => {
       message: "You must login!",
     });
   try {
-    const detoken = jwt.verify(token, 'datisekai');
-    console.log(detoken);
+    const detoken = jwt.verify(token, "datisekai");
     req.userId = detoken.userId;
     next();
   } catch (error) {

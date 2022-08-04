@@ -241,11 +241,11 @@ const getAllProductByAdmin = async (req, res) => {
   const skip = (page - 1) * limit;
 
   try {
-    const products = await Product.find()
+    const products = await Product.find({ status: 1 })
       .populate("typeId")
       .skip(skip)
       .limit(limit);
-    const total = await Product.countDocuments();
+    const total = await Product.countDocuments({ status: 1 });
     if (!products) {
       return res.status(403).json({ success: false, message: "Get failed!" });
     }
