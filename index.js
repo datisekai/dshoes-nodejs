@@ -19,12 +19,17 @@ const cors = require("cors");
 
 require("dotenv").config();
 
+//mongodb://127.0.0.1:27017/dshoes
+
 const connectDB = async () => {
   try {
-    await mongoose.connect(`mongodb://127.0.0.1:27017/dshoes`, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(
+      `mongodb+srv://datisekai:bedatnee312@cluster0.ltwzv.mongodb.net/?retryWrites=true&w=majority`,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    );
 
     console.log("MongoDB connected!");
   } catch (err) {
